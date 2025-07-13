@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+
 interface ECGParams {
   heart_rate: number;
   h_p: number;
@@ -78,34 +79,38 @@ const ECGGraph: React.FC = () => {
   const ERASE_WIDTH = 12;
 
   // Initialize SVG elements
-  useEffect(() => {
-    if (!svgRef.current) return;
+ // Initialize SVG elements
+useEffect(() => {
+  if (!svgRef.current) return;
 
-    const svg = svgRef.current;
-    
-    // Create waveform path
-    const waveformPath = document.createElementNS(svg.namespaceURI, "path");
-    waveformPath.setAttribute("stroke", "#2c3e50");
-    waveformPath.setAttribute("fill", "none");
-    waveformPath.setAttribute("stroke-width", "2");
-    svg.appendChild(waveformPath);
+  const svg = svgRef.current;
+  
+  // Clear any existing content
+  svg.innerHTML = '';
 
-    // Create pointer head
-    const pointerHead = document.createElementNS(svg.namespaceURI, "circle");
-    pointerHead.setAttribute("r", POINTER_RADIUS.toString());
-    pointerHead.setAttribute("fill", "#fff");
-    pointerHead.setAttribute("stroke", "#fff");
-    pointerHead.setAttribute("stroke-width", "2");
-    svg.appendChild(pointerHead);
+  // 1. First create and draw the grid
+  drawGridSVG();
 
-    // Draw grid
-    drawGridSVG();
+  // 2. Then create the waveform path (will appear on top of grid)
+  const waveformPath = document.createElementNS(svg.namespaceURI, "path");
+  waveformPath.setAttribute("stroke", "#2c3e50");
+  waveformPath.setAttribute("fill", "none");
+  waveformPath.setAttribute("stroke-width", "2");
+  svg.appendChild(waveformPath);
 
-    return () => {
-      // Clean up
-      svg.innerHTML = '';
-    };
-  }, []);
+  // 3. Finally create the pointer head (will appear on top of everything)
+  const pointerHead = document.createElementNS(svg.namespaceURI, "circle");
+  pointerHead.setAttribute("r", POINTER_RADIUS.toString());
+  pointerHead.setAttribute("fill", "#fff");
+  pointerHead.setAttribute("stroke", "#fff");
+  pointerHead.setAttribute("stroke-width", "2");
+  svg.appendChild(pointerHead);
+
+  return () => {
+    // Clean up
+    svg.innerHTML = '';
+  };
+ }, []);
 
   // Draw grid function
   const drawGridSVG = () => {
@@ -115,7 +120,7 @@ const ECGGraph: React.FC = () => {
     const gridGroup = document.createElementNS(svg.namespaceURI, "g");
     svg.appendChild(gridGroup);
 
-    const small = 8, large = small * 5;
+    const small = 8;
     for (let x = 0; x <= svg.width.baseVal.value; x += small) {
       const line = document.createElementNS(svg.namespaceURI, "line");
       line.setAttribute("x1", x.toString());
@@ -387,7 +392,7 @@ const ECGGraph: React.FC = () => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [pathPoints]);
+  }, [animationLoop]);
 
   // Initialize on mount
   useEffect(() => {
@@ -422,10 +427,22 @@ const ECGGraph: React.FC = () => {
   return (
     <div style={{
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-      backgroundColor: '#f4f4f9',
-      color: '#333',
-      margin: 0,
-      padding: '20px'
+      // backgroundColor: '#f4f4f9',
+      // // flex: 2,
+      // color: '#333',
+      // margin: 0,
+      // padding: '20px',
+      // minHeight: '100vh',
+      //  // Ensures full viewport coverage
+      // width: '100vw',
+        backgroundColor: '#f4f4f9',
+        minHeight: '100vh',    // Full viewport height
+        width: 'max-content',  // Allows horizontal expansion
+        minWidth: '100vw',     // At least full viewport width
+        margin: 0,
+        padding: '20px',
+        overflowX: 'auto'      // Enables horizontal scrolling
+        
     }}>
       <h1 style={{ color: '#2c3e50' }}>ECG Waveform Animator (Custom Beats)</h1>
       <div style={{
@@ -667,7 +684,14 @@ const ECGGraph: React.FC = () => {
             Apply Changes
           </button>
         </div>
-        <div style={{ flex: 2, minWidth: '600px' }}>
+        {/* <div style={{ 
+        flex: 2, 
+        minWidth: '600px',
+        backgroundColor: '#f4f4f9', // Grey background
+        padding: '20px',
+        borderRadius: '8px'
+      }}> */}
+        <div style={{ flex: 2, minWidth: '600px',backgroundColor: '#f4f4f9',height: '100%',overflow:'inherit'}}>
           <svg
             ref={svgRef}
             width="1000"
