@@ -441,7 +441,7 @@ useEffect(() => {
         minWidth: '100vw',     // At least full viewport width
         margin: 0,
         padding: '20px',
-        overflowX: 'auto'      // Enables horizontal scrolling
+        // overflowX: 'auto'      // Enables horizontal scrolling
         
     }}>
       <h1 style={{ color: '#2c3e50' }}>ECG Waveform Animator (Custom Beats)</h1>
